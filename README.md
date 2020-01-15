@@ -8,7 +8,7 @@ This registration algorithm can be applied to:
 
 Registration speed:
 1. Two 1980*1080 pictures are about 1.5s
-2. Two images of 1280 by 720 are about 0.7s
+2. Two 1280*720 pictures are about 0.7s
 
 Different Angle registration of the same picture
 
