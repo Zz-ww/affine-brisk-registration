@@ -1,6 +1,14 @@
 # affine-brisk-registration
 The combination of affine transformation and brisk registration algorithm is suitable for quick registration in different scenarios.
 
+This registration algorithm can be applied to:
+1. Same object, different perspectives, rollover, change, etc.
+2. Different environments and perspectives for the same object.
+3. Different objects, same shape.
+
+Registration speed:
+1. Two 1980*1080 pictures are about 1.5s
+2. Two images of 1280 by 720 are about 0.7s
 
 Different Angle registration of the same picture
 
