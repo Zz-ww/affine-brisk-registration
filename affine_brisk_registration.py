@@ -1,15 +1,14 @@
 import numpy as np
 import cv2 as cv
-import multiprocessing
 from multiprocessing.pool import ThreadPool
-import multiprocessing
-import threading
 import time
+import scipy.misc
+import matplotlib.pyplot as plt
 
 #Set up detector, matcher
 def init_feature():
 
-    detector = cv.BRISK_create(thresh=30, octaves=4)
+    detector = cv.BRISK_create(thresh=60, octaves=4)
 
     # flann_params= dict(algorithm = 6,  #Parameter configuration
     #                        table_number = 12,
@@ -78,11 +77,10 @@ def explore_match(img1, img2, kp_pairs, status = None, H = None):
         if inlier:
             cv.line(vis, (x1, y1), (x2, y2), green)
 
-    win='meter_registration'
-    cv.namedWindow(win, 0)
-    cv.resizeWindow(win, 1920, 1080)
-    cv.imshow(win, vis)
-    cv.waitKey(0)
+    scipy.misc.imsave('./4.jpg', vis)
+    # vis.save('./1.jpg')
+    # plt.imshow(vis)
+    # plt.show()
 
 #Affine transformation is performed on the registration image
 def affine_skew(tilt, phi, img, mask=None):
@@ -219,33 +217,25 @@ def test(fn1, fn2):
 
     #The monotonic change matrix H was obtained by the feature points, and the feature points were further screened by RANSAC
     if len(p1) >= 4:
-        H1, status1 = cv.findHomography(p1, p2, cv.RANSAC, 5.0)
+        H, status = cv.findHomography(p1, p2, cv.RANSAC, 5.0)
+        kp_pairs = [kpp for kpp, flag in zip(kp_pairs, status) if flag]
 
-        H2, status2 = cv.findHomography(p2, p1, cv.RANSAC, 5.0)
-        status_true = status1 & status2
-        kp_pairs = [kpp for kpp, flag in zip(kp_pairs, status_true) if flag]
-        p1, p2 = [], []
-        for kpp in kp_pairs:
-            p1.append(np.int32(kpp[0].pt))
-            p2.append(np.int32(kpp[1].pt))
-        p1 = np.array(p1)
-        p2 = np.array(p2)
 
         #If you choose the ROI region,need complete the cut part of the ROI area picture
         # for i in range(len(p1)):
         #     p1[i][0] = p1[i][0] + x1
         #     p1[i][1] = p1[i][1] + y1
 
-        H, status = cv.findHomography(p1, p2, cv.RANSAC, 5.0)
+
         elapsed = (time.clock() - start)
         print("Time used:", elapsed)
         print('%d / %d  inliers/matched' % (np.sum(status), len(status)))
 
     else:
         H, status = None, None
-
+    explore_match(img1, img2, kp_pairs, None, H)
     return H
 if __name__ == "__main__":
-    fn1 = '/path/image2'
-    fn2 = '/path/image2'
+    fn1 = './2_1 (1).jpg'
+    fn2 = './2_1 (2).jpg'
     H = test(fn1, fn2)
